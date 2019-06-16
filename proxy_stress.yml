@@ -1,0 +1,30 @@
+config:
+  target: 'http://localhost:3003'
+  phases:
+    - duration: 60
+      arrivalRate: 1200
+scenarios:
+  - name: "GET all earnings for a stock"
+    weight: 4
+    flow:
+      - loop:
+        - get:
+            url: "/api/stocks/{{ $randomNumber(7, 10000000) }}/earnings"
+        - get:
+            url: "/stocks/{{ $randomNumber(10000000, 20000000) }}"
+        count: 10
+  - name: "GET then POST"
+    weight: 1
+    flow:
+      - loop:
+        - get:
+            url: "/api/stocks/{{ $randomNumber(7, 10000000) }}/earnings"
+        - post:
+            url: "/api/stocks/{{ $randomNumber(10000000, 20000000) }}/earnings"
+            json:
+              lasteps: "{{ $randomNumber(1, 4) }}"
+              reported_earnings: "{{ $randomNumber(100000000, 900000000) }}"
+              outstanding_shares: "{{ $randomNumber(100000000, 900000000) }}"
+              year: "{{ $randomNumber(2017, 2019) }}"
+              quarter: "{{ $randomNumber(1, 4) }}"
+        count: 10
